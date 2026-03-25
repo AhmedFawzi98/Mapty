@@ -4,7 +4,6 @@ A lightweight workout tracking application built with vanilla HTML, CSS, JavaScr
 
 ---
 
-````md
 ```mermaid
 classDiagram
 
@@ -70,7 +69,6 @@ class App {
   +reset()
 }
 ```
-````
 
 ## Features
 
