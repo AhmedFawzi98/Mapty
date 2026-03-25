@@ -66,7 +66,7 @@ class App {
 
   -formatDate()
 
-  +reset()
+  -reset()
 }
 ```
 
