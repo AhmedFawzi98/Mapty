@@ -198,6 +198,7 @@ a:visited {
 }
 
 /* Popup width is defined in JS using options */
+/* these classes already assigned to elements created by Leaflet library by the library itself.*/
 .leaflet-popup .leaflet-popup-content-wrapper {
     background-color: var(--color-dark--1);
     color: var(--color-light--2);
@@ -213,6 +214,7 @@ a:visited {
     background-color: var(--color-dark--1);
 }
 
+/*these are custom classes of our app*/
 .running-popup .leaflet-popup-content-wrapper {
     border-left: 5px solid var(--color-brand--2);
 }
