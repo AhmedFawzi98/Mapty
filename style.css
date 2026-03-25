@@ -168,6 +168,10 @@ a:visited {
     background-color: #fff;
 }
 
+.form__btn {
+    display: none;
+}
+
 .form__btn-reset {
     grid-column: 1 / -1;
     padding: 0.5rem;
