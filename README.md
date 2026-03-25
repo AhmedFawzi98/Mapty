@@ -9,63 +9,63 @@ A lightweight workout tracking application built with vanilla HTML, CSS, JavaScr
 classDiagram
 
 class Workout {
-  +Date date
-  +string id
-  +number distance
-  +number[] coords
-  +number duration
-  +constructor(distance, coords, duration)
+  +date
+  +id
+  +distance
+  +coords
+  +duration
+  +constructor()
 }
 
 class RunningWorkout {
-  +string type = "running"
-  +number cadence
-  +constructor(distance, coords, duration, cadence)
-  +get pace() number
+  +type
+  +cadence
+  +constructor()
+  +pace()
 }
 
 class CyclingWorkout {
-  +string type = "cycling"
-  +number elevationGain
-  +constructor(distance, coords, duration, elevationGain)
-  +get speed() number
+  +type
+  +elevationGain
+  +constructor()
+  +speed()
 }
 
 Workout <|-- RunningWorkout
 Workout <|-- CyclingWorkout
 
 class App {
-  -Workout[] #workouts
-  -#map
-  -#mapEvent
-  -number #mapZoom
-  -number #mapMaxZoom
+  -workouts
+  -map
+  -mapEvent
+  -mapZoom
+  -mapMaxZoom
 
   +constructor()
 
-  -#initializeApp()
-  -#getGeoLocationPositionAsync()
-  -#loadMap(coords)
+  -initializeApp()
+  -getGeoLocationPositionAsync()
+  -loadMap()
 
-  -#setupFormEventListeners()
+  -setupFormEventListeners()
 
-  -#addNewWorkout()
-  -#isValidInputData(type, ...inputs)
+  -addNewWorkout()
+  -isValidInputData()
 
-  -#SaveWorkoutsInLocalStorage()
-  -#loadWorkoutsFromLocalStorage()
-  -#normalizeWorkoutObjects(workoutData)
+  -saveWorkoutsInLocalStorage()
+  -loadWorkoutsFromLocalStorage()
+  -normalizeWorkoutObjects()
 
-  -#createMarkerWithPopup(workout)
-  -#renderWorkout(workout)
+  -createMarkerWithPopup()
+  -renderWorkout()
 
-  -#moveToWorkoutCoords(workoutId)
+  -moveToWorkoutCoords()
 
-  -#Openform()
-  -#closeForm()
-  -#toggleFormFields()
+  -openForm()
+  -closeForm()
+  -toggleFormFields()
 
-  -#formatDate(date)
+  -formatDate()
 
   +reset()
 }
