@@ -38,6 +38,36 @@ function loadMap(coords) {
     });
 }
 
+function createMarkerWithPopup() {
+    const { lat, lng } = mapEvent.latlng;
+    const markerCoords = [lat, lng];
+    const popUpOptions = {
+        maxWidth: 250,
+        minWidth: 100,
+        autoClose: false,
+        closeOnClick: false,
+        className: "running-popup",
+    };
+    const popup = L.popup(popUpOptions);
+    const popupContent = "workout";
+    const marker = L.marker(markerCoords)
+        .addTo(map)
+        .bindPopup(popup)
+        .setPopupContent(popupContent)
+        .openPopup();
+}
+
+form.addEventListener("submit", (submitEvent) => {
+    submitEvent.preventDefault();
+    createMarkerWithPopup();
+    form.reset();
+});
+
+inputType.addEventListener("change", (changeEvent) => {
+    elevationFormRow.classList.toggle("form__row--hidden");
+    cadenceFormRow.classList.toggle("form__row--hidden");
+});
+
 async function init() {
     try {
         const geolocationPosition = await getGeoLocationPositionAsync();
