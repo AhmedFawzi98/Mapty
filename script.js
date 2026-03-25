@@ -1,8 +1,5 @@
 "use strict";
 
-// prettier-ignore
-const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-
 const form = document.querySelector(".form");
 const containerWorkouts = document.querySelector(".workouts");
 const inputType = document.querySelector(".form__input--type");
@@ -107,6 +104,7 @@ class App {
         const duration = Number(inputDuration.value);
         const { lat, lng } = this.#mapEvent.latlng;
         const coords = [lat, lng];
+
         let workout;
         if (type === "running") {
             const cadence = Number(inputCadence.value);
@@ -142,11 +140,11 @@ class App {
             );
         }
 
-        this.#workouts.push(workout);
+        this.#workouts.unshift(workout);
 
-        this.#createMarkerWithPopup(workout, type);
+        this.#createMarkerWithPopup(workout);
 
-        //render workout in the list
+        this.#renderWorkout(workout);
 
         this.#closeForm();
     }
@@ -159,12 +157,6 @@ class App {
     }
 
     #createMarkerWithPopup(workout) {
-        const formattedWorkoutDate = new Intl.DateTimeFormat("en-US", {
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-        }).format(workout.date);
-
         const popUpOptions = {
             maxWidth: 300,
             minWidth: 100,
@@ -173,12 +165,42 @@ class App {
             className: `${workout.type}-popup`,
         };
         const popup = L.popup(popUpOptions);
-        const popupContent = `${workout.type} ${workout.distance} km for ${workout.duration} min - on ${formattedWorkoutDate}`;
+        const popupContent = `${workout.type} ${workout.distance} km for ${workout.duration} min - on ${this.#formatDate(workout.date)}`;
         const marker = L.marker(workout.coords)
             .addTo(this.#map)
             .bindPopup(popup)
             .setPopupContent(popupContent)
             .openPopup();
+    }
+
+    #renderWorkout(workout) {
+        const isCycling = workout.type === "cycling";
+
+        const html = `<li class="workout workout--${workout.type}" data-id="${workout.id}">
+                      <h2 class="workout__title">${workout.type} on ${this.#formatDate(workout.date)}</h2>
+                      <div class="workout__details">
+                        <span class="workout__icon">${isCycling ? "🚴‍♀️" : "🏃‍♂️"}</span>
+                        <span class="workout__value">${workout.distance}</span>
+                        <span class="workout__unit">km</span>
+                      </div>
+                      <div class="workout__details">
+                            <span class="workout__icon">⏱</span>
+                            <span class="workout__value">${workout.duration}</span>
+                            <span class="workout__unit">min</span>
+                      </div>
+                      <div class="workout__details">
+                            <span class="workout__icon">⚡️</span>
+                            <span class="workout__value">${isCycling ? workout.speed.toFixed(2) : workout.pace.toFixed(2)}</span>
+                            <span class="workout__unit">${isCycling ? "km/hr" : "min/km"}</span>
+                      </div>
+                      <div class="workout__details">
+                            <span class="workout__icon">${isCycling ? "⛰" : "🦶🏼"}</span>
+                            <span class="workout__value">${isCycling ? workout.elevationGain : workout.cadence}</span>
+                            <span class="workout__unit">${isCycling ? "m" : "spm"}</span>
+                      </div>
+        `;
+
+        containerWorkouts.insertAdjacentHTML("afterbegin", html);
     }
 
     #Openform() {
@@ -194,6 +216,13 @@ class App {
     #toggleFormFields() {
         elevationFormRow.classList.toggle("form__row--hidden");
         cadenceFormRow.classList.toggle("form__row--hidden");
+    }
+
+    #formatDate(date) {
+        return new Intl.DateTimeFormat("en-US", {
+            day: "numeric",
+            month: "long",
+        }).format(date);
     }
 }
 
