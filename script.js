@@ -96,6 +96,12 @@ class App {
         });
 
         inputType.addEventListener("change", this.#toggleFormFields);
+
+        containerWorkouts.addEventListener("click", (clickEvent) => {
+            const workoutLi = clickEvent.target.closest(".workout");
+            if (!workoutLi) return;
+            this.#moveToWorkoutCoords(workoutLi.dataset.id);
+        });
     }
 
     #addNewWorkout() {
@@ -203,6 +209,17 @@ class App {
         containerWorkouts.insertAdjacentHTML("afterbegin", html);
     }
 
+    #moveToWorkoutCoords(workoutId) {
+        const workout = this.#workouts.find(
+            (workout) => workout.id === workoutId,
+        );
+        this.#map.setView(workout.coords, this.#mapZoom, {
+            animate: true,
+            pan: {
+                duration: 1,
+            },
+        });
+    }
     #Openform() {
         form.classList.remove("hidden");
         inputDistance.focus();
