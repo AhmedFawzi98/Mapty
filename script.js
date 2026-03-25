@@ -9,6 +9,7 @@ const inputCadence = document.querySelector(".form__input--cadence");
 const cadenceFormRow = inputCadence.closest(".form__row");
 const inputElevation = document.querySelector(".form__input--elevation");
 const elevationFormRow = inputElevation.closest(".form__row");
+const resetBtn = document.querySelector(".form__btn-reset");
 
 class Workout {
     date = new Date();
@@ -52,17 +53,20 @@ class App {
     #mapMaxZoom = 19;
 
     constructor() {
-        this.#initalizeMap();
+        this.#initalizeApp();
         this.#setupFormEventListeners();
     }
 
-    async #initalizeMap() {
+    async #initalizeApp() {
         try {
             const geolocationPosition =
                 await this.#getGeoLocationPositionAsync();
+
             const { latitude, longitude } = geolocationPosition.coords;
             const coords = [latitude, longitude];
             this.#loadMap(coords);
+
+            this.#loadWorkoutsFromLocalStorage();
         } catch (error) {
             alert(error.message);
         }
@@ -97,11 +101,20 @@ class App {
 
         inputType.addEventListener("change", this.#toggleFormFields);
 
+        resetBtn.addEventListener("click", () => {
+            this.#reset();
+        });
+
         containerWorkouts.addEventListener("click", (clickEvent) => {
             const workoutLi = clickEvent.target.closest(".workout");
             if (!workoutLi) return;
             this.#moveToWorkoutCoords(workoutLi.dataset.id);
         });
+    }
+
+    #reset() {
+        localStorage.removeItem("workouts");
+        location.reload();
     }
 
     #addNewWorkout() {
@@ -147,6 +160,7 @@ class App {
         }
 
         this.#workouts.unshift(workout);
+        this.#SaveWorkoutsInLocalStorage();
 
         this.#createMarkerWithPopup(workout);
 
@@ -160,6 +174,24 @@ class App {
         return numericInputs.every(
             (numericInput) => Number.isFinite(numericInput) && numericInput > 0,
         );
+    }
+
+    #SaveWorkoutsInLocalStorage() {
+        localStorage.setItem("workouts", JSON.stringify(this.#workouts));
+    }
+
+    #loadWorkoutsFromLocalStorage() {
+        const stringifiedWorkouts = localStorage.getItem("workouts");
+        if (!stringifiedWorkouts) return;
+
+        this.#workouts = JSON.parse(stringifiedWorkouts).map(
+            this.#normalizeWorkoutObjects,
+        );
+
+        this.#workouts.forEach((workout) => {
+            this.#createMarkerWithPopup(workout);
+            this.#renderWorkout(workout);
+        });
     }
 
     #createMarkerWithPopup(workout) {
@@ -240,6 +272,30 @@ class App {
             day: "numeric",
             month: "long",
         }).format(date);
+    }
+
+    #normalizeWorkoutObjects(workoutData) {
+        let workout;
+        if (workoutData.type === "running") {
+            workout = new RunningWorkout(
+                workoutData.distance,
+                workoutData.coords,
+                workoutData.duration,
+                workoutData.cadence,
+            );
+        } else if (workoutData.type === "cycling") {
+            workout = new CyclingWorkout(
+                workoutData.distance,
+                workoutData.coords,
+                workoutData.duration,
+                workoutData.elevationGain,
+            );
+        }
+
+        workout.date = new Date(workoutData.date);
+        workout.id = workoutData.id;
+
+        return workout;
     }
 }
 
